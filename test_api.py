@@ -15,7 +15,7 @@ try:
     if groq_key:
         client = Groq(api_key=groq_key)
         response = client.chat.completions.create(
-            model="llama-3.1-70b-versatile",  # ✅ CORRECT - Updated from decommissioned model
+            model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": "Say 'Hello from Groq' in 5 words"}],
             max_tokens=100
         )

@@ -79,7 +79,7 @@ def query_groq(prompt, api_key):
         client = Groq(api_key=api_key)
         
         message = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",  # ✅ CORRECT - Not decommissioned
+            model="llama-3.1-8b-instant",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=1024,
             temperature=0.7
@@ -93,19 +93,29 @@ def query_groq(prompt, api_key):
 
 def query_mistral(prompt, api_key):
     """
-    Query Mistral API with the latest API format
+    Query Mistral API using the installed SDK's client interface
     """
-    from mistralai import Mistral  # ✅ CORRECT NEW IMPORT
-    
     try:
-        client = Mistral(api_key=api_key)
-        
-        message = client.chat.complete(  # ✅ CORRECT METHOD
-            model="mistral-small-latest",  # ✅ CORRECT MODEL
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=1024,
-            temperature=0.7
-        )
+        try:
+            from mistralai import Mistral
+        except ImportError:
+            from mistralai.client import MistralClient
+
+            client = MistralClient(api_key=api_key)
+            message = client.chat(
+                model="mistral-small-latest",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=1024,
+                temperature=0.7
+            )
+        else:
+            client = Mistral(api_key=api_key)
+            message = client.chat.complete(
+                model="mistral-small-latest",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=1024,
+                temperature=0.7
+            )
         
         return message.choices[0].message.content
     
